@@ -11,7 +11,7 @@ RUN git clone https://github.com/rpm-software-management/libhif
 # build and install libhif
 RUN (mkdir -p /libhif/build \
  &&  cd /libhif/build \
- &&  cmake .. \
+ &&  cmake .. -DCMAKE_INSTALL_PREFIX:PATH=/usr \
  &&  make && make install)
 
 # install rust & bindgen
@@ -23,12 +23,5 @@ RUN curl -O -sSf https://static.rust-lang.org/rustup.sh \
 # append `.cargo/bin` to `PATH`
 ENV PATH /root/.cargo/bin:\\$PATH
 
-# copy `glibconfig.h` to `glib-2.0` include path
-RUN cp /usr/lib64/glib-2.0/include/glibconfig.h /usr/include/glib-2.0/
-
-# prepend `glib-2.0/` to all includes starting with `g`
-RUN find /usr/include/{librepo,glib-2.0} /usr/local/include/libhif \
-         -name '*.h' -exec sed -i "s,<g,<glib-2.0/g,g" {} +
-
-# run bindgen
-CMD ["bindgen", "/usr/local/include/libhif/libhif.h"]
+# generate bindings
+CMD sh -c 'bindgen -override-enum-type sint -builtins $(pkg-config --libs libhif) $(pkg-config --cflags libhif) /usr/include/libhif/libhif.h'

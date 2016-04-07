@@ -19,20 +19,8 @@ echo "- Building image, this may take a while"
   docker build -t rust-libhif . \
     | grep -e '^ --->' -e '^Step'
 echo " Build complete, continuing ..."
-
-mkdir -p build/
-
-echo "- Collecting build artifacts"
-  docker run -v $(pwd)/build:/build:Z \
-    rust-libhif \
-    sh -c "for lib in 'libhif*.so' 'librepo*.so' 'libsolv*.so'; \
-             do (cp \$(find /usr/lib64 -name \${lib}) /build 2>/dev/null); \
-           done"
-find build/ -type f -exec echo " - {}" \;
-
 echo "- Generating Rust bindings"
   docker run -v $(pwd)/build:/build:Z \
     rust-libhif \
-    bindgen -l '/build/*' -match 'hif' /usr/local/include/libhif/libhif.h \
     > libhif.rs
 echo "Done!"
