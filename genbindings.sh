@@ -20,7 +20,5 @@ echo "- Building image, this may take a while"
     | grep -e '^ --->' -e '^Step'
 echo " Build complete, continuing ..."
 echo "- Generating Rust bindings"
-  docker run -v $(pwd)/build:/build:Z \
-    rust-libhif \
-    > libhif.rs
+  docker run rust-libhif > libhif.rs
 echo "Done!"
