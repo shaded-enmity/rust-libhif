@@ -16,7 +16,7 @@
 set -e
 
 echo "- Building image, this may take a while"
-  docker build --no-cache -t rust-libhif . \
+  docker build -t rust-libhif . \
     | grep -e '^ --->' -e '^Step'
 echo " Build complete, continuing ..."
 
